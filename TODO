@@ -1,9 +1,21 @@
-Backend
--------
-- Auto-insert newline after h*. section headers
-- Add section edit links ?
-- Add diffs to history
+Currently working on moving the code to a more object oriented approach and only supporting PHP5.
 
-Themes
-------
-Create an ExtJS theme
+Current working class:  class.git.php (does the basics)
+                        test.git.php (test page for git class)
+
+
+Goals for this project:
+
+    Multi-Language support per page
+    Authentication abstraction class
+        MySQL
+        sqlite
+        htaccess
+
+    Macros
+    Plugins
+    Themes
+    Permissions
+    Better Wiki/Twiki parser
+
+
