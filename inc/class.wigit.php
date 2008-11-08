@@ -147,8 +147,8 @@ class Wigit {
 
     private function getFile($page) {
         $file = $this->config['dataDir'].'/'.$page;
-        if (!is_file($file)) {
-            $this->resource['type'] = 'edit';
+        if (!is_file($file) && ($this->resource['type'] !== 'edit')) {
+            $this->resource['type'] = 'none';
         }
         return $file;
     }

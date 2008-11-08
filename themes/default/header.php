@@ -6,7 +6,9 @@ $title = $this->config['title'].' :: '.$this->config['resource']['title'];
 <head>
 	<title><?php echo($title); ?></title>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-    <!--link rel="stylesheet" href="http://yui.yahooapis.com/2.5.1/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css"-->
+    <link rel="stylesheet" href="http://yui.yahooapis.com/2.6.0/build/reset-fonts-grids/reset-fonts-grids.css" type="text/css">
+    <link rel="stylesheet" href="http://yui.yahooapis.com/2.6.0/build/base/base.css" type="text/css">
+    <link rel="stylesheet" href="<?php echo($this->config['parent']->config['baseURL']); ?>themes/default/style.css" type="text/css">
 </head>
 <body>
 <div id="doc3" class="yui-t1">
