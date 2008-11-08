@@ -89,31 +89,40 @@ class Git {
         return $output;
     }
 
-	public function history($file = "") {
+	public function history($file = "", $num=10) {
 		$output = array();
 		// FIXME: Find a better way to find the files that changed than --name-only
 		$this->log("--name-only --pretty=format:'%H@|@%T@|@%an@|@%ae@|@%aD@|@%s' -- $file", $output);
 		$history = array();
 		$historyItem = array();
+        $count = 0;
+        if ($num === false) {
+            //TODO Make this a config option?
+            //Maxing out at 50 items..
+            $num = 50;
+        }
 		foreach ($output as $line) {
-			$logEntry = explode("@|@", $line, 6);
-			if (sizeof($logEntry) > 1) {
-				// Populate history structure
-				$historyItem = array(
-						"author" => $logEntry[2], 
-						"email" => $logEntry[3],
-						"linked-author" => (
-								$logEntry[3] == "" ? 
-									$logEntry[2] 
-									: "<a href=\"mailto:$logEntry[3]\">$logEntry[2]</a>"),
-						"date" => $logEntry[4], 
-						"message" => $logEntry[5],
-						"commit" => $logEntry[0]
-					);
-			} else if (!isset($historyItem["file"])) {
-				$historyItem["file"] = $line;
-				$history[] = $historyItem;
-			}
+            $logEntry = explode("@|@", $line, 6);
+            if (sizeof($logEntry) > 1) {
+                if ($count < $num) {
+                        // Populate history structure
+                        $historyItem = array(
+                                "author" => $logEntry[2], 
+                                "email" => $logEntry[3],
+                                "linked-author" => (
+                                        $logEntry[3] == "" ? 
+                                            $logEntry[2] 
+                                            : "<a href=\"mailto:$logEntry[3]\">$logEntry[2]</a>"),
+                                "date" => $logEntry[4], 
+                                "message" => $logEntry[5],
+                                "commit" => $logEntry[0]
+                            );
+                }
+                $count++;
+            } else if (!isset($historyItem["file"])) {
+                $historyItem["file"] = $line;
+                $history[] = $historyItem;
+            }
 		}
 		return $history;
 	}

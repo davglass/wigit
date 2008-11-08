@@ -9,9 +9,9 @@ class Wigit {
         'theme' => 'default'
     );
     
-    private $modes = array('edit', 'view');
+    private $modes = array('edit', 'view', 'history');
 
-    private $git = null;
+    public $git = null;
     private $resource = null;
     public $theme = null;
 
