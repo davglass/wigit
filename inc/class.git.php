@@ -84,8 +84,8 @@ class Git {
         return $output;
     }
 
-    public function commit($msg, $author, &$output = '') {
-        $this->git('commit --allow-empty --no-verify --message="'.addslashes($msg).'" --author="'.$author.'"', $output);
+    public function commit($msg, $author, $file='', &$output = '') {
+        $this->git('commit --allow-empty --no-verify --message="'.addslashes($msg).'" --author="'.$author.'" '.$file, $output);
         return $output;
     }
 
@@ -121,7 +121,8 @@ class Git {
 
     private function git($cmd, &$output = "") {
         $gitCmd = $this->bin.' --git-dir='.$this->repo.' --work-tree='.$this->tree.' '.$cmd;
-        echo('cmd: '.$gitCmd."<br>");
+
+        //echo('cmd: '.$gitCmd."<br>");
 
         $output = array();
         $result;
