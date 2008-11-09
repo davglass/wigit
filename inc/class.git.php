@@ -79,46 +79,57 @@ class Git {
         return $output;
     }
 
-    public function catFile($args, $sha, $file, &$output = '') {
-        $this->git('cat-file '.$args.' '.$sha.':'.$file, $output);
-        return $output;
-    }
-
     public function commit($msg, $author, $file='', &$output = '') {
         $this->git('commit --allow-empty --no-verify --message="'.addslashes($msg).'" --author="'.$author.'" '.$file, $output);
         return $output;
     }
 
+    public function historyCount($file, $max=false) {
+        return count($this->historyList($file, $max));
+    }
+
+    public function historyList($file, $max=false) {
+        $output = array();
+        $max = "";
+        if ($max !== false) {
+            $max = " --max-count=$max ";
+        }
+        $this->log("--pretty=format:'%H' -- ".$max.$file, $output);
+        return $output;
+    }
+
+    public function historyFile($sha, $file, &$output = '') {
+        $this->git('cat-file -p '.$sha.':'.$file, $output);
+        return join("\n", $output);
+    }
+
+
 	public function history($file = "", $num=10) {
-		$output = array();
-		// FIXME: Find a better way to find the files that changed than --name-only
-		$this->log("--name-only --pretty=format:'%H@|@%T@|@%an@|@%ae@|@%aD@|@%s' -- $file", $output);
-		$history = array();
-		$historyItem = array();
-        $count = 0;
         if ($num === false) {
             //TODO Make this a config option?
             //Maxing out at 50 items..
             $num = 50;
         }
+		$output = array();
+		// FIXME: Find a better way to find the files that changed than --name-only
+		$this->log("--name-only --pretty=format:'%H@|@%T@|@%an@|@%ae@|@%aD@|@%s' --max-count=$num -- $file", $output);
+		$history = array();
+		$historyItem = array();
 		foreach ($output as $line) {
             $logEntry = explode("@|@", $line, 6);
             if (sizeof($logEntry) > 1) {
-                if ($count < $num) {
-                        // Populate history structure
-                        $historyItem = array(
-                                "author" => $logEntry[2], 
-                                "email" => $logEntry[3],
-                                "linked-author" => (
-                                        $logEntry[3] == "" ? 
-                                            $logEntry[2] 
-                                            : "<a href=\"mailto:$logEntry[3]\">$logEntry[2]</a>"),
-                                "date" => $logEntry[4], 
-                                "message" => $logEntry[5],
-                                "commit" => $logEntry[0]
-                            );
-                }
-                $count++;
+                // Populate history structure
+                $historyItem = array(
+                        "author" => $logEntry[2], 
+                        "email" => $logEntry[3],
+                        "linked-author" => (
+                                $logEntry[3] == "" ? 
+                                    $logEntry[2] 
+                                    : "<a href=\"mailto:$logEntry[3]\">$logEntry[2]</a>"),
+                        "date" => $logEntry[4], 
+                        "message" => $logEntry[5],
+                        "commit" => $logEntry[0]
+                    );
             } else if (!isset($historyItem["file"])) {
                 $historyItem["file"] = $line;
                 $history[] = $historyItem;

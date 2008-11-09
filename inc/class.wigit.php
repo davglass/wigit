@@ -40,7 +40,11 @@ class Wigit {
     }
 
     public function getContent() {
-        $data = @file_get_contents($this->resource['file']);
+        if ($_GET['history']) {
+            $data = $this->git->historyFile($_GET['history'], $this->resource['page']);
+        } else {
+            $data = @file_get_contents($this->resource['file']);
+        }
         if ($this->resource['type'] == 'view') {
             //TODO put some logic here for which parser to use.
             $parser = &new Text_Wiki_Mediawiki();

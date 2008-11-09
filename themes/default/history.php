@@ -1,6 +1,5 @@
 <?php
 
-
 $history = $this->config['parent']->git->history($this->config['resource']['page']);
 
 echo('<table>');
@@ -15,7 +14,5 @@ foreach($history as $k => $item) {
     $count++;
 }
 echo('</table>');
-
-#echo('<pre>'.print_r($history, 1).'</pre>');
 
 ?>
