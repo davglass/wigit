@@ -1,6 +1,6 @@
-***************************
+******************************
 * WiGit II: A Git-based Wiki *
-***************************
+******************************
 
 About
 -----
@@ -47,14 +47,8 @@ your webserver. E.g.,
 			RewriteBase /wigit/
 			RewriteCond %{REQUEST_FILENAME} !-f
             RewriteRule ^/wigit/themes/(.*) %{REQUEST_URI} [L]
-			RewriteRule (.*) /wigit/index.php?r=$1 [L] 
+			RewriteRule (.*) /wigit/index.php?r=$1 [L,QSA] 
 		</IfModule>
-* For lighttpd, add the following to your config file:
-    url.rewrite-once (       
-        "^/wigit/templates/(.*)" => "$0",
-        "^/wigit(.*)" => "/wigit/index.php?r=$1",
-      )
-(where /wigit is replaced by your own base url)
 
 
 

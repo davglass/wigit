@@ -1,3 +1,11 @@
+Thinking about renaming the project since it now doesn't resemble the forked project.
+
+Possible names:
+
+    gitiki
+    gitWiki
+
+
 Currently working on moving the code to a more object oriented approach and only supporting PHP5.
 
 Current working class:  class.git.php (does the basics)
