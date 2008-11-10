@@ -35,9 +35,9 @@ class Git {
             if (is_writable($path)) {
                 $this->tree = $path;
                 $repo = $path.'/.git';
+                $this->repo = $repo;
                 if (is_dir($repo)) {
                     $this->_init = true;
-                    $this->repo = $repo;
                 } else {
                     //Init the tree?
                     $this->init();

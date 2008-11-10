@@ -1,5 +1,5 @@
 <?php
-//$debug = true;
+#$debug = true;
 
 require_once('Text/Wiki/Mediawiki.php');
 require_once('Text/Wiki/BBCode.php');

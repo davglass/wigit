@@ -42,13 +42,12 @@ For URL rewriting, change the SCRIPT_URL to be the base URL prefix (as
 is shown in the config file), and add the necessary URL rewrite rules for
 your webserver. E.g.,
 * For Apache, add the following to .htaccess in your wigit install dir:
-		<IfModule mod_rewrite.c>
-			RewriteEngine On
-			RewriteBase /wigit/
-			RewriteCond %{REQUEST_FILENAME} !-f
+        <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteCond %{REQUEST_FILENAME} !-f
             RewriteRule ^/wigit/themes/(.*) %{REQUEST_URI} [L]
-			RewriteRule (.*) /wigit/index.php?r=$1 [L,QSA] 
-		</IfModule>
+            RewriteRule ^/wigit/(.*) /wigit/index.php?r=$1 [L,QSA] 
+        </IfModule>
 
 
 
