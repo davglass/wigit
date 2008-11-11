@@ -1,7 +1,7 @@
 <?php
-class Wigit {
+class Wigit extends Base {
     
-    public $config = array(
+    protected $cfg = array(
         'title' => 'Wigit',
         'defaultPage' => 'Home',
         'baseURL' => '/wigit/',
@@ -16,9 +16,10 @@ class Wigit {
     public $theme = null;
 
     function __construct($userConfig) {
-        $this->config['baseDir'] = realpath('.').'/';
+        parent::__construct($userConfig);
 
-        $this->parseConfig($userConfig);
+        $this->set('baseDir', realpath('.').'/');
+        $this->set('dataDir', realpath($this->get('dataDir')));
 
         $this->connectGit();
 
@@ -29,9 +30,9 @@ class Wigit {
 
     private function initTheme() {
         $cfg = array(
-            'dir' => $this->config['baseDir'].'themes/',
-            'name' => $this->config['theme'],
-            'title' => $this->config['title'],
+            'dir' => $this->get('baseDir').'themes/',
+            'name' => $this->get('theme'),
+            'title' => $this->get('title'),
             'resource' => $this->resource,
             'parent' => $this
         );
@@ -46,9 +47,9 @@ class Wigit {
             $data = @file_get_contents($this->resource['file']);
         }
         if ($this->resource['type'] == 'view') {
-            //TODO put some logic here for which parser to use.
+            //TODO put some logic here for which parser to use and support page links..
             $parser = &new Text_Wiki_Mediawiki();
-            $parser->setRenderConf('xhtml', 'wikilink', 'view_url', $this->resource['baseURL']);
+            $parser->setRenderConf('xhtml', 'wikilink', 'url', $this->resource['baseURL']);
             $data = $parser->transform($data, 'Xhtml');
         }
         return $data;
@@ -56,7 +57,7 @@ class Wigit {
 
     private function fetchRequest() {
         $req = $_GET['r'];
-        $this->log('fetching request', $req);
+        $this->logger('fetching request', $req);
 
 		$matches = array();
 		$page = $req;
@@ -66,10 +67,10 @@ class Wigit {
         
         $pos = strrpos($page, '/') + 1;
         $mode = strtolower(substr($page, $pos));
-        $this->log('mode: ', $mode);
+        $this->logger('mode: ', $mode);
         if (in_array($mode, $this->modes)) {
             $page = substr($page, 0, $pos);
-            $this->log('valid mode: ', $mode);
+            $this->logger('valid mode: ', $mode);
             $type = $mode;
         }
         $len = strlen($page);
@@ -79,7 +80,7 @@ class Wigit {
 
 
 		if ($page == '') {
-			$page = $this->config['defaultPage'];
+			$page = $this->set('defaultPage');
 		}
 		if ($type == '') {
 			$type = 'view';
@@ -96,8 +97,8 @@ class Wigit {
 
         $this->resource = array(
             'page' => $page,
-            'url' => $this->config['baseURL'].$url,
-            'navurl' => $this->config['baseURL'].$page,
+            'url' => $this->get('baseURL').$url,
+            'navurl' => $this->get('baseURL').$page,
             'type' => $type,
             'file' => $file,
             'title' => $title
@@ -107,11 +108,11 @@ class Wigit {
         $this->resource['file'] = $file;
 
         if (($this->resource['type'] == 'edit') && ($_POST)) {
-            $this->log('Edit mode..');
+            $this->logger('Edit mode..');
             $this->saveEdit();
         }
         
-        $this->log('request', $this->resource);
+        $this->logger('request', $this->resource);
     }
 
     private function saveEdit() {
@@ -130,7 +131,7 @@ class Wigit {
         }
         $fp = @file_put_contents($file, $content);
         if ($fp === false) {
-            throw new ErrorException('Wigit failed to write the file, check permissions on the data dir: ('.realpath($this->config['dataDir']).')', 0, E_ERROR);
+            throw new ErrorException('Wigit failed to write the file, check permissions on the data dir: ('.realpath($this->get('dataDir')).')', 0, E_ERROR);
         }
 
 		$msg = addslashes('Changed '.$this->resource['title']);
@@ -150,7 +151,7 @@ class Wigit {
     }
 
     private function getFile($page) {
-        $file = $this->config['dataDir'].'/'.$page;
+        $file = $this->get('dataDir').'/'.$page;
         if (!is_file($file) && ($this->resource['type'] !== 'edit')) {
             $this->resource['type'] = 'none';
         }
@@ -163,30 +164,9 @@ class Wigit {
 	}
 
     private function connectGit() {
-        $this->log('before connect git');
-        $this->git = new Git($this->config['dataDir']);
-        $this->log('after connect git');
-    }
-
-    private function parseConfig($userConfig) {
-        $this->log('parseConfig');
-        $this->log('preConfig', $this->config);
-        foreach($userConfig as $k => $v) {
-            $this->config[$k] = $v;
-        }
-        $this->config['dataDir'] = realpath($this->config['dataDir']);
-        $this->log('postConfig', $this->config);
-    }
-
-    public function log($title, $str='') {
-        if (!$GLOBALS['debug']) {
-            return;
-        }
-        if (!$str) {
-            echo('<strong>'.$title.'</strong><br>');
-        } else {
-            echo('<strong>'.$title.'</strong><br><pre>'.print_r($str, 1).'</pre>');
-        }
+        $this->logger('before connect git');
+        $this->git = new Git($this->get('dataDir'));
+        $this->logger('after connect git');
     }
 
 }

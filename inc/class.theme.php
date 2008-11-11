@@ -1,46 +1,46 @@
 <?php
-class WigitTheme {
+class WigitTheme extends Base {
     
-    public $config = array();
-    private $themeDir = '';
-    private $header = 'header.php';
-    private $footer = 'footer.php';
-    private $content = 'view.php';
-    private $data = '';
+    protected $cfg = array(
+        'header' => 'header.php',
+        'footer' => 'footer.php',
+        'content' => 'view',
+    );
 
     function __construct($config) {
-        $this->config = $config;
-        $this->log('theme config', $this->config);
+        parent::__construct($config);
+        $this->logger('theme config', $this->config);
         $this->getThemeDir();
         $this->getParts();
     }
 
     private function getParts() {
-        $header = $this->themeDir.'/'.$this->header;
+        $header = $this->get('themeDir').'/'.$this->get('header');
         if (!is_file($header)) {
             throw new ErrorException('WigitTheme failed to locate the header file: ('.$dir.'/'.$this->header.')', 0, E_ERROR);
         }
-        $this->header = $header;
+        $this->set('header', $header);
 
-        $footer = $this->themeDir.'/'.$this->footer;
+        $footer = $this->get('themeDir').'/'.$this->get('footer');
         if (!is_file($header)) {
             throw new ErrorException('WigitTheme failed to locate the footer file: ('.$dir.'/'.$this->footer.')', 0, E_ERROR);
         }
-        $this->footer = $footer;
-
-        $content = $this->themeDir.'/'.$this->config['resource']['type'].'.php';
+        $this->set('footer', $footer);
+        
+        $r = $this->get('resource');
+        $content = $this->get('themeDir').'/'.$r['type'].'.php';
         if (!is_file($content)) {
             throw new ErrorException('WigitTheme failed to locate the content file: ('.$dir.'/'.$this->content.')', 0, E_ERROR);
         }
-        $this->content = $content;
+        $this->set('content', $content);
     }
 
     public function render($data='') {
         $this->data = $data;
-        $this->log('Render Theme');
-        include($this->header);
-        include($this->content);
-        include($this->footer);
+        $this->logger('Render Theme');
+        include($this->get('header'));
+        include($this->get('content'));
+        include($this->get('footer'));
     }
 
     public function getContent() {
@@ -48,22 +48,12 @@ class WigitTheme {
     }
 
     private function getThemeDir() {
-        $dir = $this->config['dir'].$this->config['name'];
+        $dir = $this->get('dir').$this->get('name');
         if (!is_dir($dir)) {
             throw new ErrorException('WigitTheme failed to locate the theme directory: ('.$dir.')', 0, E_ERROR);
         }
-        $this->themeDir = $dir;
+        $this->set('themeDir', $dir);
     }
 
-    public function log($title, $str='') {
-        if (!$GLOBALS['debug']) {
-            return;
-        }
-        if (!$str) {
-            echo('<strong>'.$title.'</strong><br>');
-        } else {
-            echo('<strong>'.$title.'</strong><br><pre>'.print_r($str, 1).'</pre>');
-        }
-    }
 }
 ?>

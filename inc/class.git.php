@@ -3,17 +3,20 @@
 * Git Abstraction class
 */
 
-class Git {
+class Git extends Base {
     
-    private $bin = '/usr/bin/git';
-    private $repo = '';
-    private $tree = '';
     private $_init = false;
+
+    protected $cfg = array(
+        'bin' => '/usr/bin/git'
+    );
     
     /**
     * 
     */
     function __construct($path) {
+        $cfg = array('path' => $path);
+        parent::__construct($cfg);
         $this->_getBin();
         $this->_getWorkingTree($path);
     }
@@ -23,7 +26,7 @@ class Git {
         //Kill the new line
         $cmd = trim($cmd);
         if (is_executable($cmd)) {
-            $this->bin = $cmd;
+            $this->set('bin', $cmd);
         } else {
             throw new ErrorException('Git failed to locate a valid git executable', 0, E_ERROR);
         }
@@ -33,9 +36,9 @@ class Git {
         $path = realpath($path);
         if (is_dir($path)) {
             if (is_writable($path)) {
-                $this->tree = $path;
+                $this->set('tree', $path);
                 $repo = $path.'/.git';
-                $this->repo = $repo;
+                $this->set('repo', $repo);
                 if (is_dir($repo)) {
                     $this->_init = true;
                 } else {
@@ -140,7 +143,7 @@ class Git {
 
 
     private function git($cmd, &$output = "") {
-        $gitCmd = $this->bin.' --git-dir='.$this->repo.' --work-tree='.$this->tree.' '.$cmd;
+        $gitCmd = $this->get('bin').' --git-dir='.$this->get('repo').' --work-tree='.$this->get('tree').' '.$cmd;
 
         //echo('cmd: '.$gitCmd."<br>");
 
